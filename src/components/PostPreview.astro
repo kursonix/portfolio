@@ -1,0 +1,28 @@
+---
+export interface Props {
+  title: string;
+  description: string;
+  pubdate: any;
+  url: string;
+}
+const { title, description, pubdate, url } = Astro.props;
+---
+
+<a href={url}>
+  <h1
+    class="text-2xl font-bold dark:text-slate-200 hover:underline decoration-sky-500 decoration-solid decoration-4"
+  >
+    {title}
+  </h1>
+</a>
+<time class="text-gray-500" datetime={pubdate}>
+  {
+    new Date(pubdate).toLocaleDateString("en-us", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
+  }
+</time>
+<p class="dark:text-slate-200">{description}</p>
+<a class="text-blue-400" href={url}>Read more</a>
