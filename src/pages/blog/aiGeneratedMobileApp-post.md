@@ -2,7 +2,7 @@
 layout: "../../layouts/BlogPost.astro"
 title: "AI Generated mobile app UI"
 description: "Let's try build mobile app UI with the help of AI"
-pubDate: "Jan 31 2022"
+pubDate: "Jan 31 2023"
 ---
 
 With the growing popularity of AI tools we look at one of them to check if it can help us with building Mobile App UI. What we are going to build is a mobile app for meditation.
@@ -19,7 +19,9 @@ Ok so our first command is.
     /imagine mobile app ui design, meditation, colour palette,
     Behance, Printerest, dribbble::3 --v 4 --q 2
 
-<br/>The word **/imagine** start our command. The last numbers **::3** add weight to word, **--v 4** ask bot to use version 4 of midjourney, **--q 2** set quality of the picture.
+<br />
+The word **/imagine** start our command. The last numbers **::3** add weight to word,
+**--v 4** ask bot to use version 4 of midjourney, **--q 2** set quality of the picture.
 This give us that result.
 
 ![Ai boot renders](/assets/posts/aiGeneratedMobileApp/1.png)

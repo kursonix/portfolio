@@ -1,0 +1,166 @@
+---
+layout: "../../layouts/BlogPost.astro"
+title: "React design patterns"
+description: "Recipes on how to solve common software development problems in react"
+pubDate: "Feb 02 2023"
+---
+
+import {
+  HookExample,
+  RenderPropExample,
+} from "../../components/reactDesignPatterns";
+
+Software development patterns aim to solve common problems that developers are dealing with. Knowing them is crucial in building
+application that is easy to manage. We look on some of the most popular ones which are efficient for cross-cutting concerns, global data sharing,
+and the separation of concerns. I will use react with typescript in examples to show how to deal with types using these patterns.
+
+## Hook pattern
+
+One of the most popular pattern today in react is I think hook pattern. It helps us separate the logic into smaller pieces.
+
+In the below example we write component that display the current width and height of the window.
+The logic to calculate dimension is in reusable hook **useWindowDimensions()**.
+
+```js
+export const Example = () => {
+  return (
+    <div>
+      <WindowDimension />
+    </div>
+  );
+};
+
+const WindowDimension = () => {
+  const { width, height } = useWindowDimensions();
+
+  return (
+    <div>
+      <p>Width: {width}</p>
+      <p>Height: {height}</p>
+    </div>
+  );
+};
+
+const useWindowDimensions = () => {
+  const [width, setWidth] = React.useState(0);
+  const [height, setHeight] = React.useState(0);
+
+  React.useEffect(() => {
+    setWidth(window.innerWidth);
+    setHeight(window.innerHeight);
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+      setHeight(window.innerHeight);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.addEventListener("resize", handleResize);
+  }, []);
+
+  return { width, height };
+};
+```
+
+<br />
+<code-result>
+  Resize window to see result:
+  <HookExample client:visible />
+</code-result>
+
+<br />
+Custom hooks can call other hooks, like here we call useState. The state of the hook
+is not share between components that are using it. To start the name from **use**
+is important for linters, that can check if rules of hooks are preserve.
+
+## Render props pattern
+
+Render props pattern help us accomplish task where we need to access state of the component by other component without lifting state above.
+
+The simples example is the one bellow. The component **TextProp** have one property render and only what it is doing is to call that render method.
+
+```js
+export const Example = () => {
+  return (
+    <div>
+      <TextProp render={() => <h1>Loerm ipsum</h1>} />
+      <TextProp render={() => <h2>Loerm ipsum</h2>} />
+    </div>
+  );
+};
+
+interface ITextProp {
+  render: () => JSX.Element;
+}
+
+const TextProp = ({ render }: ITextProp) => {
+  return render();
+};
+```
+
+<br />
+More usable example is with sharing state. We can have for example Date Input component
+that has date state inside and we want print that date in US and GB format. Without
+lifting state above we can pass the render method to DateInput component with the
+parameter date.
+
+```js
+export const Example = () => {
+  return (
+    <div>
+      Format US
+      <DateInput render={(date) => <FormatUS date={date} />} />
+      Format GB
+      <DateInput render={(date) => <FormatGB date={date} />} />
+    </div>
+  );
+};
+
+interface IDateInput {
+  render: (date: string) => JSX.Element;
+}
+
+const DateInput = ({ render }: IDateInput) => {
+  const [date, setDate] = React.useState("");
+
+  return (
+    <div>
+      <input
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+      />
+      {render(date)}
+    </div>
+  );
+};
+
+interface IFormat {
+  date: string;
+}
+
+const FormatUS = ({ date }: IFormat) => {
+  if (!isValidDate(date)) {
+    return <span></span>;
+  }
+  return <span>{new Date(date).toLocaleDateString("en-US")}</span>;
+};
+
+const FormatGB = ({ date }: IFormat) => {
+  if (!isValidDate(date)) {
+    return <span></span>;
+  }
+  return <span>{new Date(date).toLocaleDateString("en-GB")}</span>;
+};
+
+function isValidDate(text: string) {
+  return isNaN(Date.parse(text)) ? false : true;
+}
+```
+
+<br />
+<code-result>
+  Result:
+  <RenderPropExample client:visible />
+</code-result>
+<br />
+
+## Compound Pattern
