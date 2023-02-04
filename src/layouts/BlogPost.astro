@@ -36,15 +36,15 @@ const {
 
 <style lang="css" is:global>
   p {
-    @apply dark:text-slate-200 mb-5;
+    @apply dark:text-slate-200 mb-5 mt-5 text-justify;
   }
   h2 {
     @apply text-2xl font-bold dark:text-slate-200 mb-5;
   }
   pre.astro-code {
-    @apply p-2;
+    @apply p-3 rounded-lg;
   }
-  code-result {
-    @apply dark:text-slate-200 bg-slate-200 dark:bg-indigo-900 p-2 block;
+  p > code {
+    @apply inline px-1 rounded-md no-underline dark:text-slate-200 bg-card dark:bg-card-dark  py-px;
   }
 </style>

@@ -2,7 +2,12 @@
 module.exports = {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        "card-dark": "#343a46",
+        card: "#ebecf0",
+      },
+    },
   },
   plugins: [],
   darkMode: "class",
