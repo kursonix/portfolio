@@ -16,10 +16,8 @@ Midjourney Bot works in Discord app. After login in and granting access you can 
 
 Our first command is.
 
-```
-/imagine mobile app ui design, meditation, colour palette,
-Behance, Printerest, dribbble::3 --v 4 --q 2
-```
+    /imagine mobile app ui design, meditation, colour palette,
+    Behance, Printerest, dribbble::3 --v 4 --q 2
 
 The word **/imagine** starts our command. The last number **::3** add weight to word,
 **--v 4** ask the bot to use version 4 of midjourney, **--q 2** set quality of the picture.
@@ -42,10 +40,8 @@ We start our work with the Home screen.
 At first, I set the background color as a gradient, then I cut the tree from the render. Unfortunately, the resolution is not good. But we can overcome this by using this image to generate
 higher resolution photo by midjourney bot. I do it in that way
 
-```
-/imagine https://s.mj.run/KqIK11NRzXA foliage tree
-Behance, Printerest, dribbble::3 --v 4 --q 2
-```
+    /imagine https://s.mj.run/KqIK11NRzXA foliage tree
+    Behance, Printerest, dribbble::3 --v 4 --q 2
 
 Url points to our tree image, further instead of rendering a mobile version I ask bot to render a photo. The result we get.
 
