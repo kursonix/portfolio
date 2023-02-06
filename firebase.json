@@ -1,6 +1,12 @@
 {
   "hosting": {
     "public": "dist",
-    "ignore": []
+    "ignore": [],
+    "redirects": [
+      {
+        "source": "/",
+        "destination": "/blog"
+      }
+    ]
   }
 }
