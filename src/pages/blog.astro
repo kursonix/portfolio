@@ -11,7 +11,7 @@ const posts = (await Astro.glob("./blog/*.{md,mdx}")).sort(
 <PageLayout>
   {
     posts.map((post) => (
-      <div class="mb-16">
+      <div class="mb-8">
         <PostPreview
           title={post.frontmatter.title}
           description={post.frontmatter.description}

@@ -1,6 +1,8 @@
 ---
 import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
+import Navigation from "../components/Navigation.astro";
+import Theme from "../components/Theme.astro";
 import { SITE_DESCRIPTION, SITE_TITLE } from "../config";
 import "../styles/global.css";
 ---
@@ -9,27 +11,27 @@ import "../styles/global.css";
 <html lang="en">
   <head>
     <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    <Theme />
   </head>
-  <body class="dark:bg-slate-800 h-screen flex flex-col">
+  <body class="dark:bg-slate-800 h-screen flex flex-col px-5 sm:px-12">
     <main
-      class="flex flex-1 flex-col md:flex-row gap-5 m-auto w-[calc(100vw - 100px)]"
+      class="flex flex-1 flex-col md:flex-row gap-5 mx-auto lg:w-[calc(100vw*0.65)]"
     >
-      <div class="md:w-1/3 md:border-r-2 pt-10 pl-5 pr-5">
+      <div class="md:w-[calc(100%*0.25)] md:border-r-[1px] pt-10">
         <img
           src="profile.jpeg"
           alt="profile picture"
-          class="w-24 h-24 rounded-full shadow-lg"
+          class="w-24 h-24 rounded-full shadow-lg dark:shadow-sky-700"
         />
-        <div class="font-bold text-xl line-he leading-loose">Dawid Kurek</div>
-        <div class="text-stone-500">
+        <div class="font-bold text-xl leading-loose dark:text-slate-200 mt-4">
+          Dawid Kurek
+        </div>
+        <div class="text-gray-700 dark:text-gray-400">
           Web developer from Poland,<br /> React and React native.
         </div>
-        <div class="flex flex-col gap-3 mt-10">
-          <a href="/blog">Blog</a>
-          <a href="/portfolio">Portfolio</a>
-        </div>
+        <Navigation />
       </div>
-      <div class="md:w-2/3 pt-10 pl-5 pr-5 border-t-2">
+      <div class="md:w-[calc(100%*0.75)] pt-10 border-t-[1px] md:border-t-0">
         <slot />
       </div>
     </main>
