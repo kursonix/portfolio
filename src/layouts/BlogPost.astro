@@ -20,57 +20,52 @@ const {
 } = Astro.props;
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-  </head>
-  <body class="dark:bg-slate-800">
-    <div class="px-5 sm:px-12 pt-10">
-      <div class="max-w-7xl mx-auto">
-        <div class="max-w-4xl mx-auto">
-          <div class="mb-4">
-            <Breadcrumb />
-          </div>
-          <article>
-            <div class="flex justify-between items-center">
-              <h1 class="text-3xl font-bold dark:text-slate-200 mb-2">
-                {title}
-              </h1>
-              <ThemeButton />
-            </div>
-            {
-              pubDate && (
-                <time class="text-gray-500">
-                  {new Date(pubDate).toLocaleDateString("en-us", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                </time>
-              )
-            }
-            <div class="mt-9">
-              <slot />
-            </div>
-          </article>
+<BaseLayout>
+  <div class="px-5 sm:px-12 pt-5 md:pt-10">
+    <div class="max-w-7xl mx-auto">
+      <div class="max-w-4xl mx-auto">
+        <div class="mb-4">
+          <Breadcrumb />
         </div>
+        <article>
+          <div class="flex justify-between items-center">
+            <h1 class="text-3xl font-bold dark:text-slate-200 mb-2">
+              {title}
+            </h1>
+            <ThemeButton />
+          </div>
+          {
+            pubDate && (
+              <time class="text-gray-500">
+                {new Date(pubDate).toLocaleDateString("en-us", {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+              </time>
+            )
+          }
+          <div class="mt-9">
+            <slot />
+          </div>
+        </article>
       </div>
     </div>
-    <Footer />
-    <style lang="css" is:global>
-      article p {
-        @apply dark:text-slate-200 mb-5 mt-5 text-justify;
-      }
-      article h2 {
-        @apply text-2xl font-bold dark:text-slate-200 mb-5;
-      }
-      article pre.astro-code {
-        @apply p-3 rounded-lg;
-      }
-      article p > code {
-        @apply inline px-1 rounded-md no-underline dark:text-slate-200 bg-card dark:bg-card-dark  py-px;
-      }
-    </style>
-  </body>
-</html>
+  </div>
+  <Footer />
+</BaseLayout>
+
+<style lang="css" is:global>
+  article p {
+    @apply dark:text-slate-200 mb-5 mt-5 text-justify;
+  }
+  article h2 {
+    @apply text-2xl font-bold dark:text-slate-200 mb-5;
+  }
+  article pre.astro-code {
+    @apply p-3 rounded-lg;
+  }
+  article p > code {
+    @apply inline px-1 rounded-md no-underline dark:text-slate-200 bg-card dark:bg-card-dark  py-px;
+  }
+</style>

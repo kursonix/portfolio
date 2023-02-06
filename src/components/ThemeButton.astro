@@ -4,11 +4,10 @@ import { Icon } from "astro-icon";
 
 <div>
   <input type="checkbox" class="checkbox" id="checkbox" />
-  <label for="checkbox" class="label">
-    <Icon class="text-pink-400" name="ph:moon-fill" size={"1em"} />
-    <Icon class="text-yellow-500" name="ph:sun-fill" size={"1em"} />
-    <div class="ball"></div>
-  </label>
+  <div>
+    <Icon class="moon" name="ph:moon-fill" size={"1.5em"} />
+    <Icon class="text-slate-200 sun" name="ph:sun-fill" size={"1.5em"} />
+  </div>
 </div>
 
 <script is:inline>
@@ -48,42 +47,19 @@ import { Icon } from "astro-icon";
   .checkbox {
     opacity: 0;
     position: absolute;
+    width: 2em;
+    height: 2em;
   }
-
-  .label {
-    width: 3em;
-    height: 1.5em;
-    background-color: #111;
-    display: flex;
-    border-radius: 50px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 5px;
-    position: relative;
-    transform: scale(1.5);
+  .moon {
+    display: block;
   }
-
-  .ball {
-    width: 1.2em;
-    height: 1.2em;
-    background-color: white;
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    border-radius: 50%;
-    transition: transform 0.2s linear;
+  .sun {
+    display: none;
   }
-
-  /*  target the elemenent after the label*/
-  .checkbox:checked + .label .ball {
-    transform: translateX(24px);
+  .checkbox:checked ~ div > .moon {
+    display: none;
   }
-
-  .fa-moon {
-    color: pink;
-  }
-
-  .fa-sun {
-    color: yellow;
+  .checkbox:checked ~ div > .sun {
+    display: block;
   }
 </style>

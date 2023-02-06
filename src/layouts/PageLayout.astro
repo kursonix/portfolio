@@ -1,28 +1,28 @@
 ---
-import BaseHead from "../components/BaseHead.astro";
 import Footer from "../components/Footer.astro";
 import Navigation from "../components/Navigation.astro";
-import Theme from "../components/Theme.astro";
-import { SITE_DESCRIPTION, SITE_TITLE } from "../config";
+import ThemeButton from "../components/ThemeButton.astro";
 import "../styles/global.css";
+import BaseLayout from "./BaseLayout.astro";
+import { Icon } from "astro-icon";
 ---
 
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-    <Theme />
-  </head>
-  <body class="dark:bg-slate-800 h-screen flex flex-col px-5 sm:px-12">
+<BaseLayout>
+  <div class="h-screen flex flex-col px-5">
     <main
       class="flex flex-1 flex-col md:flex-row gap-5 mx-auto lg:w-[calc(100vw*0.70)]"
     >
-      <div class="md:w-[calc(100%*0.30)] md:border-r-[1px] pt-10 pr-5">
-        <img
-          src="/profile.jpeg"
-          alt="profile picture"
-          class="w-24 h-24 rounded-full shadow-lg dark:shadow-sky-700"
-        />
+      <div
+        class="md:w-[calc(100%*0.30)] md:border-r-[1px] pt-5 md:pt-10 md:pr-5"
+      >
+        <div class="flex justify-between">
+          <img
+            src="/profile.jpeg"
+            alt="profile picture"
+            class="w-24 h-24 rounded-full shadow-lg dark:shadow-sky-700"
+          />
+          <ThemeButton />
+        </div>
         <div class="font-bold text-xl leading-loose dark:text-slate-200 mt-4">
           Dawid Kurek
         </div>
@@ -30,11 +30,19 @@ import "../styles/global.css";
           Web developer from Poland,<br /> React and React native.
         </div>
         <Navigation />
+        <div class="flex gap-4 mt-8">
+          <a href="mailto:proactivebit@gmail.com">
+            <Icon class="dark:text-slate-200" name="mdi:email" size={"2em"} />
+          </a>
+          <a href="https://github.com/proactivebit">
+            <Icon class="dark:text-slate-200" name="mdi:github" size={"2em"} />
+          </a>
+        </div>
       </div>
       <div class="md:w-[calc(100%*0.70)] pt-10 border-t-[1px] md:border-t-0">
         <slot />
       </div>
     </main>
     <Footer />
-  </body>
-</html>
+  </div>
+</BaseLayout>
