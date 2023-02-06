@@ -5,7 +5,8 @@
     "redirects": [
       {
         "source": "/",
-        "destination": "/blog"
+        "destination": "/blog",
+        "type": 301
       }
     ]
   }
