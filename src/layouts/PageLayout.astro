@@ -5,9 +5,15 @@ import ThemeButton from "../components/ThemeButton.astro";
 import "../styles/global.css";
 import BaseLayout from "./BaseLayout.astro";
 import { Icon } from "astro-icon";
+
+export interface Props {
+  title: string;
+  description: string;
+}
+const { title, description } = Astro.props;
 ---
 
-<BaseLayout>
+<BaseLayout title={title} description={description}>
   <div class="h-screen flex flex-col px-5">
     <main
       class="flex flex-1 flex-col md:flex-row gap-5 lg:mx-auto w-full lg:w-[calc(100vw*0.70)]"

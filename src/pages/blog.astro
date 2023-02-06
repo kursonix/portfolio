@@ -8,7 +8,10 @@ const posts = (await Astro.glob("./blog/*.{md,mdx}")).sort(
 );
 ---
 
-<PageLayout>
+<PageLayout
+  title="Dawid Kurek private blog"
+  description="Technical blog for developers"
+>
   {
     posts.map((post) => (
       <div class="mb-8">
