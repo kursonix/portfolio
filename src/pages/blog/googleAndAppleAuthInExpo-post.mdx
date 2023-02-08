@@ -1,8 +1,8 @@
 ---
 layout: "../../layouts/BlogPost.astro"
-title: "Google and Apple authentication in expo with firebase ⛨"
+title: "Google and Apple authentication in React Native Expo with firebase ⛨"
 description: "Detailed description of how to implement social authentication in your expo app"
-pubDate: "Feb 07 2023"
+pubDate: "Feb 08 2023"
 ---
 
 Today you will follow with an example of how to implement Google and Apple authentication in your expo app. It's a quite complicated and long process. Post based on real working application `TaskTask`.
@@ -271,6 +271,6 @@ We call method `loginWithCredential` with our credential data. That should retur
 To enable authentication in production we have to make some adjustments to google configuration.
 
 - Go to **[Google Developer Console Credential](https://console.developers.google.com/apis/credentials)**,
-- Edit package name, set to the name from `app.json` -> expo.android.package,
-- Edit SHA-1 fingerprint, in case you enable google signing your application, you should copy this fingerprint from
+- Edit OAuth2 client Id for Android and edit package name, set to the name from `app.json` -> expo.android.package,
+- Edit SHA-1 fingerprint, in case you enable google sign in your application, you should copy this fingerprint from
   **[google play console](https://play.google.com/console)**. Go to your app and copy your fingerprint from the configuration section.
