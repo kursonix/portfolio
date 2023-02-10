@@ -1,0 +1,214 @@
+---
+layout: "../../layouts/BlogPost.astro"
+title: "Advanced typescript"
+description: "Let's dive into more advanced topics about typescript"
+pubDate: "Feb 09 2023"
+---
+
+Each one of us wants to be better from day to day and today's story is about making us better.
+We will talk about typescript and more advanced topics that should help us write better code in the future.
+
+## As const assertions
+
+Assertions are a way to make variables more specific regardless of their inferred type. One of them is
+as const assertions, which make our variable readonly. It is especially valuable in combination with arrays.
+
+```js
+const numbers = [1,2,3] as const;
+//Cannot assign to '0' because it is a read-only property.ts(2540)
+numbers[0] = 1;
+```
+
+Above we want to change the value of the first element of the array. The compilator will raise the error. The same
+situation will be with objects.
+
+```js
+const test = {test: 'test'} as const;
+//Cannot assign to 'test' because it is a read-only property.ts(2540)
+test.test = 'test2';
+```
+
+We have to be aware that it is only in compilation time, at runtime we still can change the value,
+to be sure that the object is immutable we have to call also `Object.freeze` method.
+
+## Satisfies Keyword
+
+Sometimes we want to ensure that a specific object contains only desirable elements, but we want to let the typescript infer a specific value.
+
+```js
+type Colors = "red" | "green" | "blue";
+type RGB = [red: number, green: number, blue: number]
+const colors: Record<Colors, string | RGB> = {
+    red: "red",
+    green: "green",
+    blue: [0,0,255]
+}
+//Property 'toUpperCase' does not exist on type 'string | RGB'. Property 'toUpperCase' does not exist on type 'RGB'.ts(2339)
+const testString = colors.red.toUpperCase();
+const testArray = colors.blue;
+```
+
+The above example will raise an error because typescript doesn't know if the property is a string or array. To fix this we can do the casting.
+
+```js
+const testString = (colors.red as string).toUpperCase();
+```
+
+but it doesn't look good. What we can do instead is to use **satisfies** Keyword.
+
+```js
+type Colors = "red" | "green" | "blue";
+type RGB = [red: number, green: number, blue: number]
+const colors = {
+    red: "red",
+    green: "green",
+    blue: [0,0,255]
+} satisfies Record<Colors, string | RGB>
+
+const testString = colors.red.toUpperCase();
+const testArray = colors.blue;
+```
+
+in that way we are only checking if the object colors is built using available types only at the creation time.
+
+## Generic Types
+
+Generic types allow you to write functions and classes that can work with multiple data types.
+
+```js
+function getAge<T>(age: T): T {
+  return age;
+}
+
+const testString = getAge("25").toUpperCase();
+const testNumber = getAge(25);
+```
+
+```js
+class Pair<T,V> {
+    private first: T;
+    private second: V;
+    constructor(first: T, second: V){
+        this.first = first;
+        this.second = second;
+    }
+    getValues(){
+        return `${this.first} ${this.second}`
+    }
+}
+
+const pair = new Pair<string, string>("first", "second");
+const pair2 = new Pair<number, number>(1, 2);
+```
+
+We can constraint generic to a specific group of objects using **extends** Keyword.
+
+```js
+interface Point {
+    x: number,
+    y: number
+}
+
+function getCoordinates<T extends Point>(value: T): string {
+    return `${value.x} ${value.y}`;
+  }
+
+const test1 = getCoordinates({width: 200, x: 3, y: 3});
+//Object literal may only specify known properties, and 'width' does not exist in type 'Point'.ts(2345)
+const tes2 = getCoordinates({width: 100, x: 30});
+```
+
+And more complex example with the keyof operator that returns the keys of the given object.
+
+```js
+function getProperty<Type, Key extends keyof Type>(obj: Type, key: Key) {
+    return obj[key];
+  }
+
+let x = { a: 1, b: 2, c: 3, d: 4 };
+
+getProperty(x, "a");
+//Argument of type '"m"' is not assignable to parameter of type '"a" | "b" | "c" | "d"'.ts(2345)
+getProperty(x, "m");
+```
+
+## Utility types
+
+Some more useful Utility types in typescript.
+
+- **Partial**
+
+Makes properties optional.
+
+```js
+interface User {
+  name: string;
+  age: number;
+  email: string;
+}
+
+function createUser(user: Partial<User>): User {
+  return {
+    name: "John Doe",
+    age: 30,
+    email: "john.doe@example.com",
+    ...user,
+  };
+}
+
+const newUser = createUser({ name: "Jane Doe" });
+```
+
+- **Readonly**
+
+Makes properties set to readonly. We can accomplish the same behavior with **as const** Keyword.
+
+```js
+interface Todo {
+  title: string;
+}
+
+const todo: Readonly<Todo> = {
+  title: "Delete inactive users",
+};
+
+// Cannot assign to 'title' because it is a read-only property.
+todo.title = "Hello";
+```
+
+- **Pick**
+
+Pick specific properties from the type and create a new type.
+
+```js
+interface Todo {
+  title: string;
+  description: string;
+  completed: boolean;
+}
+
+type TodoPreview = Pick<Todo, "title" | "completed">;
+
+const todo: TodoPreview = {
+  title: "Clean room",
+  completed: false,
+};
+```
+
+- **Omit**
+
+Omit specific properties and create a new type.
+
+```js
+interface Todo {
+  title: string;
+  description: string;
+  completed: boolean;
+}
+
+type Description = Omit<Todo, "title" | "completed">;
+
+const todo: Description = {
+  description: "Clean room desc",
+};
+```
