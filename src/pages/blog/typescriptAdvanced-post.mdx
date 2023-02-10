@@ -1,17 +1,32 @@
 ---
 layout: "../../layouts/BlogPost.astro"
-title: "Advanced typescript"
+title: "Advanced typescript 👑"
 description: "Let's dive into more advanced topics about typescript"
-pubDate: "Feb 09 2023"
+pubDate: "Feb 10 2023"
 ---
+
+import { Card } from "../../components/blog";
 
 Each one of us wants to be better from day to day and today's story is about making us better.
 We will talk about typescript and more advanced topics that should help us write better code in the future.
 
-## As const assertions
+<Card>
+  <div>
+    ## What you will learn
+
+    1. [As const assertions](#as-const-assertions)
+    2. [Satisfies Keyword](#satisfies-keyword)
+    3. [Generic Types](#generic-types)
+    4. [Utility types](#utility-types)
+    5. [Conditional Types](#conditional-types)
+
+   </div>
+</Card>
+
+## As const assertions <a name="as-const-assertions"></a>
 
 Assertions are a way to make variables more specific regardless of their inferred type. One of them is
-as const assertions, which make our variable readonly. It is especially valuable in combination with arrays.
+as const assertions, which make our variable readonly.
 
 ```js
 const numbers = [1,2,3] as const;
@@ -20,7 +35,7 @@ numbers[0] = 1;
 ```
 
 Above we want to change the value of the first element of the array. The compilator will raise the error. The same
-situation will be with objects.
+story will be with objects.
 
 ```js
 const test = {test: 'test'} as const;
@@ -28,12 +43,12 @@ const test = {test: 'test'} as const;
 test.test = 'test2';
 ```
 
-We have to be aware that it is only in compilation time, at runtime we still can change the value,
+We have to be aware that this assertion works only in compilation time, at runtime we can still change the value,
 to be sure that the object is immutable we have to call also `Object.freeze` method.
 
-## Satisfies Keyword
+## Satisfies Keyword <a name="satisfies-keyword"></a>
 
-Sometimes we want to ensure that a specific object contains only desirable elements, but we want to let the typescript infer a specific value.
+Sometimes we want to ensure that the object contains only desirable elements, but on the other end, we want to let the typescript infer a specific value.
 
 ```js
 type Colors = "red" | "green" | "blue";
@@ -48,7 +63,7 @@ const testString = colors.red.toUpperCase();
 const testArray = colors.blue;
 ```
 
-The above example will raise an error because typescript doesn't know if the property is a string or array. To fix this we can do the casting.
+The above example will raise an error because typescript doesn't know if the property is string or array. To fix this we can do the casting.
 
 ```js
 const testString = (colors.red as string).toUpperCase();
@@ -69,9 +84,9 @@ const testString = colors.red.toUpperCase();
 const testArray = colors.blue;
 ```
 
-in that way we are only checking if the object colors is built using available types only at the creation time.
+in that way, we check only if the object is built using available types.
 
-## Generic Types
+## Generic Types <a name="generic-types"></a>
 
 Generic types allow you to write functions and classes that can work with multiple data types.
 
@@ -118,7 +133,7 @@ const test1 = getCoordinates({width: 200, x: 3, y: 3});
 const tes2 = getCoordinates({width: 100, x: 30});
 ```
 
-And more complex example with the keyof operator that returns the keys of the given object.
+And more complex example with the keyof operator that returns keys of the given object.
 
 ```js
 function getProperty<Type, Key extends keyof Type>(obj: Type, key: Key) {
@@ -132,7 +147,7 @@ getProperty(x, "a");
 getProperty(x, "m");
 ```
 
-## Utility types
+## Utility types <a name="utility-types"></a>
 
 Some more useful Utility types in typescript.
 
@@ -161,7 +176,7 @@ const newUser = createUser({ name: "Jane Doe" });
 
 - **Readonly**
 
-Makes properties set to readonly. We can accomplish the same behavior with **as const** Keyword.
+Makes properties readonly. We can accomplish the same behavior with **as const** Keyword.
 
 ```js
 interface Todo {
@@ -211,4 +226,74 @@ type Description = Omit<Todo, "title" | "completed">;
 const todo: Description = {
   description: "Clean room desc",
 };
+```
+
+## Mapped Types <a name="mapped-types"></a>
+
+Mapping functionality in programming means transforming some object into another in such a way that the resulting object is the same size as the original,
+like map function in js.
+
+```js
+[1, 2, 3].map((item) => item + 1);
+```
+
+In typescript, Mapped types allow us to transform one type into another. It is useful when we have some relation between objects that need to be synced.
+
+```js
+interface User {
+  name: string;
+  password: string;
+}
+
+type UserPermission = {
+  editName: boolean,
+  editPassword: boolean,
+};
+```
+
+Above we have **User** type and the corresponding **UserPermission**. Every time we add sth. to the User type we need to add corresponding permission to it.
+We can make the typescript do it for us instead.
+
+```js
+type UserPermission = {
+  [key in keyof User as `edit${Capitalize<key>}`]: boolean
+}
+
+const permission: UserPermission = {
+  editName: true,
+  editPassword: true
+}
+```
+
+In that way, every time then we add sth. to the User, the UserPermission type will be extended with the corresponding permission.
+
+## Conditional Types <a name="conditional-types"></a>
+
+Conditional types allow us to define type using condition.
+
+```js
+type SomeType<T> = T extends string ? string : any;
+type StringType = SomeType<"test">;
+type AnyType = SomeType<1>;
+```
+
+We can combine this expression with infer keyword. In that way, we can get literal from the value.
+
+```js
+type InferSth<T> = T extends {a: infer A} ? A : any;
+//type Inferred = "test"
+type Inferred = InferSth<{a: "test"}>;
+```
+
+A couple of utility types use under-the-hood conditional types. Let's check how they are implemented.
+
+```js
+type ReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any;
+type ReturnTypeExample = ReturnType<() => 1>; // type ReturnTypeExample = number
+
+type Exclude<T, U> = T extends U ? never : T;
+type T2 = Exclude<string | number | (() => void), Function>;  // string | number
+
+type Extract<T, U> = T extends U ? T : never;
+type T0 = Extract<"a" | "b" | "c", "a" | "f">; // type T0 = "a"
 ```

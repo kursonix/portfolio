@@ -5,17 +5,34 @@ description: "Detailed description of how to implement social authentication in 
 pubDate: "Feb 08 2023"
 ---
 
+import { Card } from "../../components/blog";
+
 Today you will follow with an example of how to implement Google and Apple authentication in your expo app. It's a quite complicated and long process. Post based on real working application `TaskTask`.
 You can check the result in my production app in **[Google Play Store](https://play.google.com/store/apps/details?id=com.proactivebit.tasktask&pli=1)** and
 **[App Store](https://apps.apple.com/us/app/tasktask/id6444321606)**. The source code of this app is available in **[GitHub](https://github.com/proactivebit/tasktask)**.
 
-## Firebase configuration
+<Card>
+  <div>
+    ## What you will learn
+
+    1. [Firebase authentication configuration](#firebase-configuration)
+    2. [Google authentication configuration](#google-authentication-configuration)
+    3. [Google authentication implementation](#google-authentication-coding)
+    4. [Apple authentication configuration](#apple-authentication-configuration)
+    5. [Apple authentication implementation](#apple-authentication-coding)
+    6. [Firebase authentication implementation](#firebase-authentication-coding)
+    7. [Going into production](#going-into-production)
+
+   </div>
+</Card>
+
+## Firebase configuration <a name="firebase-configuration"></a>
 
 First, you need to have Google and Apple sign-in enabled in your project in the firebase console.
 
 ![Sign in Providers](https://firebasestorage.googleapis.com/v0/b/portfolio-c3f2e.appspot.com/o/googleAndAppleAuthInExpo-post-1.png?alt=media&token=ef0802e2-3638-4b4f-86a2-f53de5706d25)
 
-## Google authentication configuration
+## Google authentication configuration <a name="google-authentication-configuration"></a>
 
 You need to create an OAuth2 client id in Google Developer Console.
 
@@ -55,7 +72,7 @@ You need to create an OAuth2 client id in Google Developer Console.
 
 This configuration will work only during development in the expo. To go into production we will have to do some adjustments.
 
-## Google authentication coding
+## Google authentication implementation <a name="google-authentication-coding"></a>
 
 We are moving to code. At first, we need to install some dependencies.
 
@@ -137,7 +154,7 @@ copy and change to
 
 `com.googleusercontent.apps.KEY_HERE:/oauth2redirect`.
 
-## Apple authentication configuration
+## Apple authentication configuration <a name="apple-authentication-configuration"></a>
 
 First, add `usesAppleSignIn: true` in the app.json file in `expo.ios`
 
@@ -179,7 +196,7 @@ It should be in the form `TeamId.BunndleId`. Copy only this BunndleId info.
 
 ![apple configuration 5](https://firebasestorage.googleapis.com/v0/b/portfolio-c3f2e.appspot.com/o/googleAndAppleAuthInExpo-post-9.png?alt=media&token=d3c9c6d0-9c11-49f1-b15c-0b5cd4807ca9)
 
-## Apple authentication coding
+## Apple authentication implementation <a name="apple-authentication-coding"></a>
 
 First, we install dependencies
 
@@ -226,7 +243,7 @@ export function useAppleAuthentication() {
 
 The hook returns two objects, one to init authentication and the second one is credentials.
 
-## Firebase authentication coding
+## Firebase authentication implementation <a name="firebase-authentication-coding"></a>
 
 Having credentials we can use them to authenticate to the Firebase.
 
@@ -266,7 +283,7 @@ export const authenticationService = new AuthenticationService()
 
 We call method `loginWithCredential` with our credential data. That should return the user data of the authenticated person.
 
-## Going into production
+## Going into production <a name="going-into-production"></a>
 
 To enable authentication in production we have to make some adjustments to google configuration.
 

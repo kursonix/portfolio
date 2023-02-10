@@ -1,9 +1,11 @@
 ---
 layout: "../../layouts/BlogPost.astro"
-title: "AI Generated mobile app UI"
+title: "AI Generated mobile app UI ✨"
 description: "Let's try build mobile app UI with the help of AI"
 pubDate: "Jan 31 2023"
 ---
+
+import { Card } from "../../components/blog";
 
 With the growing popularity of AI tools, we look at one of them to check if it can help us with building Mobile App UI. What we are going to build is a mobile app for meditation.
 In our work, we will use React Native and expo.
@@ -12,7 +14,18 @@ The AI tool that will work for us today is _[Midjourney Bot](https://midjourney.
 
 Midjourney Bot works in Discord app. After login in and granting access you can start and type commands. It can be tested for free.
 
-## Creating assets
+<Card>
+  <div>
+    ## What you will learn
+
+    1. [Creating assets using AI](#creating-assets)
+    2. [Implementing home screen](#home-screen)
+    3. [Implementing details screen](#details-screen)
+
+   </div>
+</Card>
+
+## Creating assets <a name="creating-assets"></a>
 
 Our first command is.
 
@@ -33,7 +46,7 @@ Selecting one of the **U1-4** options asks the bot to upscale this particular ve
 
 We will use this version as the layout of our app.
 
-## Home screen
+## Home screen <a name="home-screen"></a>
 
 We start our work with the Home screen.
 
@@ -57,7 +70,7 @@ Next, I choose a font similar to the render one, create buttons and position ele
 
 ![Home screen final](https://firebasestorage.googleapis.com/v0/b/portfolio-c3f2e.appspot.com/o/post-aiGeneratedMobileApp-5.png?alt=media&token=0d791e24-5cac-4886-bafe-ae4bc1fe2e8a)
 
-## Details screen
+## Details screen <a name="details-screen"></a>
 
 The second screen that we are going to build is Details screen
 

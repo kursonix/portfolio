@@ -1,6 +1,6 @@
 ---
 layout: "../../layouts/BlogPost.astro"
-title: "React design patterns"
+title: "React design patterns 💎"
 description: "Recipes on how to solve common software development problems in react"
 pubDate: "Feb 02 2023"
 ---
@@ -12,13 +12,24 @@ import {
   RenderPropChildrenExample,
   CompoundPatternExample,
 } from "../../components/blog/reactDesignPatterns";
-import { CodeResult } from "../../components/blog";
+import { CodeResult, Card } from "../../components/blog";
 
 Software development patterns aim to solve common problems that developers are dealing with. Knowing them is crucial in building
 an application that is easy to manage. We look at some of the most popular ones which are efficient for cross-cutting concerns, global data sharing,
 and the separation of concerns. I will use react with typescript in examples to show how to deal with types using these patterns.
 
-## Hook pattern
+<Card>
+  <div>
+    ## What you will learn
+
+    1. [Hook pattern](#hook-pattern)
+    2. [Render props pattern](#render-props-pattern)
+    3. [Compound Pattern](#compound-pattern)
+
+   </div>
+</Card>
+
+## Hook pattern <a name="hook-pattern"></a>
 
 One of the most popular pattern today in react is I think hook pattern. It helps us separate the logic into smaller pieces.
 
@@ -78,7 +89,7 @@ Hooks are simply functions that can return some value. We can use others hooks i
 to follow some rules. Hooks should be called at the beginning of the function and they cannot be called inside any condition like the
 if statement.
 
-## Render props pattern
+## Render props pattern <a name="render-props-pattern"></a>
 
 Render props pattern helps us accomplish tasks where we need to access the inner state of the component by other components without lifting that state outside.
 
@@ -210,7 +221,7 @@ const DateInput = ({ children }: IDateInput) => {
 
 Render prop is a good technique when we need to preserve the state of the component inside it.
 
-## Compound Pattern
+## Compound Pattern <a name="compound-pattern"></a>
 
 Sometimes we can have situations when the group of components works together to accomplish our task,
 like the select input. To create such components we can utilize Compound Pattern.
