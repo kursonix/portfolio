@@ -1,8 +1,8 @@
 ---
-import Footer from "../components/Footer.astro";
-import BaseLayout from "./BaseLayout.astro";
-import ThemeButton from "../components/ThemeButton.astro";
 import Breadcrumb from "../components/Breadcrumb.astro";
+import Footer from "../components/Footer.astro";
+import ThemeButton from "../components/ThemeButton.astro";
+import BaseLayout from "./BaseLayout.astro";
 
 export interface Props {
   content: {
@@ -53,8 +53,11 @@ const {
 </BaseLayout>
 
 <style lang="css" is:global>
+  article {
+    @apply dark:text-slate-200;
+  }
   article p {
-    @apply dark:text-slate-200 mb-5 mt-5 text-justify;
+    @apply mb-5 mt-5 text-justify;
   }
   article h2 {
     @apply text-2xl font-bold dark:text-slate-200 my-5;
@@ -62,7 +65,19 @@ const {
   article pre.astro-code {
     @apply p-3 rounded-lg;
   }
-  article p > code {
-    @apply inline px-1 rounded-md no-underline dark:text-slate-200 bg-card dark:bg-card-dark  py-px;
+  article pre.astro-code > code {
+    background-color: #0d1117;
+  }
+  article code {
+    @apply inline px-1 rounded-md no-underline  bg-card dark:bg-card-dark  py-px;
+  }
+  article ul {
+    @apply list-disc ml-8;
+  }
+  article ol {
+    @apply list-decimal ml-8;
+  }
+  article li {
+    @apply my-3;
   }
 </style>

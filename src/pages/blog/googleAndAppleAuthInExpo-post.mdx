@@ -1,0 +1,276 @@
+---
+layout: "../../layouts/BlogPost.astro"
+title: "Google and Apple authentication in React Native Expo with firebase ⛨"
+description: "Detailed description of how to implement social authentication in your expo app"
+pubDate: "Feb 08 2023"
+---
+
+Today you will follow with an example of how to implement Google and Apple authentication in your expo app. It's a quite complicated and long process. Post based on real working application `TaskTask`.
+You can check the result in my production app in **[Google Play Store](https://play.google.com/store/apps/details?id=com.proactivebit.tasktask&pli=1)** and
+**[App Store](https://apps.apple.com/us/app/tasktask/id6444321606)**. The source code of this app is available in **[GitHub](https://github.com/proactivebit/tasktask)**.
+
+## Firebase configuration
+
+First, you need to have Google and Apple sign-in enabled in your project in the firebase console.
+
+![Sign in Providers](https://firebasestorage.googleapis.com/v0/b/portfolio-c3f2e.appspot.com/o/googleAndAppleAuthInExpo-post-1.png?alt=media&token=ef0802e2-3638-4b4f-86a2-f53de5706d25)
+
+## Google authentication configuration
+
+You need to create an OAuth2 client id in Google Developer Console.
+
+- Go to **[Google Developer Console Credential](https://console.developers.google.com/apis/credentials)**, the app for which we are adding keys should be created by firebase,
+- Click Create Credential for Android:
+  1. Choose Android Application,
+  2. Set the “package name” to: `host.exp.exponent`,
+  3. Generate fingerprint running this command
+     `openssl rand -base64 32 | openssl sha1 -c`,
+- Click Create Credential for iOS:
+  1. Choose iOS Application,
+  2. Set the “package name” to: `host.exp.exponent`,
+- Click Create Credential for the web application:
+  1. Choose a web Application,
+  2. Set the “package name” to: `host.exp.exponent`,
+  3. Fill rest of the form like in the screenshots
+     ![Credentials 1](https://firebasestorage.googleapis.com/v0/b/portfolio-c3f2e.appspot.com/o/googleAndAppleAuthInExpo-post-2.png?alt=media&token=f1ec4e88-6c5a-4ba4-a41c-5aa3c6a759f5)
+     In the black space put your project id from firebase
+     ![Credentials 2](https://firebasestorage.googleapis.com/v0/b/portfolio-c3f2e.appspot.com/o/googleAndAppleAuthInExpo-post-3.png?alt=media&token=77c7e8ad-7336-4909-88c6-c96c827ff481)
+     The first black space is your project id from firebase,
+     the second is the link to your application in Expo Go - in black space here is my username,
+- Copy iOS, android and web client ID to the extra property of `app.config.js`
+
+  ```js
+  extra: {
+      iosKey: process.env.IOS_CLIENT_ID,
+      androidKey: process.env.ANDROID_CLIENT_ID,
+      firebaseWebApi: process.env.FIREBASE_WEB_API,
+      },
+  ```
+
+  I moved my credentials to the `.env` file, and I only reference them.
+
+- Go back to your firebase console and edit the configuration of google authentication. Fill in the below sections.
+  ![additional configuration](https://firebasestorage.googleapis.com/v0/b/portfolio-c3f2e.appspot.com/o/googleAndAppleAuthInExpo-post-4.png?alt=media&token=6d3f2514-0cd6-4527-80f3-9e6904a79461)
+  In the safelist add your android and iOS client Id. In the web SDK configuration, fill in the information from the web credentials.
+
+This configuration will work only during development in the expo. To go into production we will have to do some adjustments.
+
+## Google authentication coding
+
+We are moving to code. At first, we need to install some dependencies.
+
+`expo-auth-session`, `expo-web-browser`, `firebase`
+
+The authentication part is separated into two phases. First, we will authenticate to google and get the credentials,
+second, we will use these credentials to authenticate to Firebase.
+
+I put the logic responsible for authentication with google into the hook `useGoogleAuthentication()`. The hook return
+two objects, one the prompt to init authentication and the second one credentials.
+
+```js
+import { GoogleAuthProvider } from "@firebase/auth"
+import { makeRedirectUri } from "expo-auth-session"
+import { useIdTokenAuthRequest } from "expo-auth-session/providers/google"
+import Constants from "expo-constants"
+import { maybeCompleteAuthSession } from "expo-web-browser"
+import { OAuthCredential } from "firebase/auth"
+import { useEffect, useState } from "react"
+import { Platform } from "react-native"
+
+maybeCompleteAuthSession()
+
+function login(id_token: string, accessToken: string) {
+  console.log("Signing in with Google...", { id_token })
+  try {
+    const credential = GoogleAuthProvider.credential(id_token, accessToken)
+    return credential
+  } catch (error) {
+    throw error
+  }
+}
+
+export function useGoogleAuthentication() {
+  let config = null
+  if (Platform.OS === "android") {
+    config = {
+      iosClientId: Constants.manifest?.extra?.iosKey,
+      androidClientId: Constants.manifest?.extra?.androidKey,
+      clientId: Constants.manifest?.extra?.firebaseWebApi,
+      redirectUri: makeRedirectUri({
+        useProxy: true,
+        native: Platform.select({
+          android: Constants.manifest?.extra?.androidKeyRedirect,
+          default: undefined,
+        }),
+      }),
+    }
+  } else {
+    config = {
+      iosClientId: Constants.manifest?.extra?.iosKey,
+      androidClientId: Constants.manifest?.extra?.androidKey,
+      clientId: Constants.manifest?.extra?.firebaseWebApi,
+    }
+  }
+  const [request, response, promptAsync] = useIdTokenAuthRequest(config)
+  const [credntial, setCredentials] = useState<OAuthCredential>()
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      const credential = login(response.params.id_token, response.params.accessToken)
+      setCredentials(credential)
+    }
+  }, [response])
+
+  async function prompt() {
+    await promptAsync()
+  }
+
+  return [prompt, credntial] as const
+}
+```
+
+On the physical device, there is a need to add `redirectUri`. To Create this redirectUri you have to copy Android client id and change it respectively.
+
+`KEY_HERE.apps.googleusercontent.com`
+
+copy and change to
+
+`com.googleusercontent.apps.KEY_HERE:/oauth2redirect`.
+
+## Apple authentication configuration
+
+First, add `usesAppleSignIn: true` in the app.json file in `expo.ios`
+
+````js
+ "ios": {
+      "icon": "./assets/images/app-icon-ios.png",
+      "supportsTablet": false,
+      "bundleIdentifier": "com.proactivebit.tasktask",
+      "splash": {
+        "image": "./assets/images/splash-logo-ios-mobile.png",
+        "tabletImage": "./assets/images/splash-logo-ios-tablet.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#191015"
+      },
+      "usesAppleSignIn": true
+    },```
+````
+
+Then go to [Apple Developer Portal](https://developer.apple.com/) and enable Sign In with Apple capability for your App ID.
+Open **Certificates, Identifiers & Profiles** then **Identifiers** and fill the from respectively.
+
+![apple configuration](https://firebasestorage.googleapis.com/v0/b/portfolio-c3f2e.appspot.com/o/googleAndAppleAuthInExpo-post-5.png?alt=media&token=c110df98-6d2c-4f87-8c29-2451e2c4698e)
+
+The url point to your app in firebase. You should find it in your firebase console.
+
+Enable the Sign In with Apple service in your app private key. If your app doesn’t use a private key yet you will need to create a new one.
+Navigate to Certificates, IDs & Profiles > Keys and select your key. Then edit it, select **Sign in with Apple** option,
+then edit it and as Primary App ID: chose your app id.
+
+![apple configuration 2](https://firebasestorage.googleapis.com/v0/b/portfolio-c3f2e.appspot.com/o/googleAndAppleAuthInExpo-post-6.png?alt=media&token=35e13245-f22e-4be4-885d-4a04b6d5405c)
+
+![apple configuration 3](https://firebasestorage.googleapis.com/v0/b/portfolio-c3f2e.appspot.com/o/googleAndAppleAuthInExpo-post-7.png?alt=media&token=3004fea5-5327-4d88-89b5-ef7618377001)
+
+We are almost done with our configuration. You have to go back to the firebase console and edit the apple authentication provider. Fill the
+service id with the information from your apple developer console > Keys > Your app id key > CONFIGURATION.
+It should be in the form `TeamId.BunndleId`. Copy only this BunndleId info.
+
+![apple configuration 4](https://firebasestorage.googleapis.com/v0/b/portfolio-c3f2e.appspot.com/o/googleAndAppleAuthInExpo-post-8.png?alt=media&token=f6bb2e5a-1922-4390-962d-2f2ffa236bdc)
+
+![apple configuration 5](https://firebasestorage.googleapis.com/v0/b/portfolio-c3f2e.appspot.com/o/googleAndAppleAuthInExpo-post-9.png?alt=media&token=d3c9c6d0-9c11-49f1-b15c-0b5cd4807ca9)
+
+## Apple authentication coding
+
+First, we install dependencies
+
+`expo-apple-authentication`, `expo-crypto`
+
+I create a hook for apple authentication. Like in Google the process of authentication is divided into two parts.
+First, we authenticate to apple then to the firebase.
+
+```js
+import * as AppleAuthentication from "expo-apple-authentication"
+import * as Crypto from "expo-crypto"
+import { OAuthCredential, OAuthProvider } from "firebase/auth"
+import { useState } from "react"
+
+export function useAppleAuthentication() {
+  const nonce = Math.random().toString(36).substring(2, 10)
+  const [credential, setCredentials] = useState<OAuthCredential>()
+  async function authWithApple() {
+    console.log("login with apple")
+    try {
+      const hashedNonce = await Crypto.digestStringAsync(Crypto.CryptoDigestAlgorithm.SHA256, nonce)
+      const appleCredential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+        nonce: hashedNonce,
+      })
+      const { identityToken } = appleCredential
+      const provider = new OAuthProvider("apple.com")
+      const credential = provider.credential({
+        idToken: identityToken!,
+        rawNonce: nonce,
+      })
+      setCredentials(credential)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  return [authWithApple, credential] as const
+}
+```
+
+The hook returns two objects, one to init authentication and the second one is credentials.
+
+## Firebase authentication coding
+
+Having credentials we can use them to authenticate to the Firebase.
+
+```js
+import { auth } from "../../config/firebase"
+
+export class AuthenticationService {
+  public async loginWithCredential(credential: AuthCredential, data?: any) {
+    console.log("Logging in with credential", credential, data)
+
+    const { user } = await signInWithCredential(auth, credential)
+
+    console.log("Signed in with credential. Updating profile details...")
+
+    if (data?.email && !user.email) {
+      await updateEmail(user, data.email)
+    }
+
+    if (data?.displayName && !user.displayName) {
+      await updateProfile(user, { displayName: data.displayName })
+    }
+
+    return user
+  }
+
+  public async logout() {
+    await signOut(auth)
+  }
+
+  public async removeAccount() {
+    await deleteUser(auth.currentUser)
+  }
+}
+
+export const authenticationService = new AuthenticationService()
+```
+
+We call method `loginWithCredential` with our credential data. That should return the user data of the authenticated person.
+
+## Going into production
+
+To enable authentication in production we have to make some adjustments to google configuration.
+
+- Go to **[Google Developer Console Credential](https://console.developers.google.com/apis/credentials)**,
+- Edit OAuth2 client Id for Android and edit package name, set to the name from `app.json` -> expo.android.package,
+- Edit SHA-1 fingerprint, in case you enable google sign in your application, you should copy this fingerprint from
+  **[google play console](https://play.google.com/console)**. Go to your app and copy your fingerprint from the configuration section.
