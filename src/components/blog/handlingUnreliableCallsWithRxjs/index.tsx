@@ -1,5 +1,17 @@
 import React from "react";
-import { Subject, map, mergeMap, of, switchMap } from "rxjs";
+import {
+  Observable,
+  Subject,
+  catchError,
+  map,
+  mergeMap,
+  of,
+  retry,
+  startWith,
+  switchMap,
+  timer,
+  zip,
+} from "rxjs";
 import { fromFetch } from "rxjs/fetch";
 
 type Action = {
@@ -11,17 +23,39 @@ type Action = {
 
 const action$ = new Subject<Action>();
 
-const characters$ = (chaos: number, timeout: number) =>
-  fromFetch(
+type Character = {
+  id: string;
+  name: string;
+};
+
+interface DataResponse {
+  loading: boolean;
+  data: Character[];
+  error?: boolean;
+  message?: string;
+}
+
+function delayFetch(URL: string) {
+  return zip(fromFetch(URL), timer(500)).pipe(
+    retry(4),
+    map(([data]) => data)
+  );
+}
+
+const characters$ = (
+  chaos: number,
+  timeout: number
+): Observable<DataResponse> =>
+  delayFetch(
     `http://127.0.0.1:5001/portfolio-c3f2e/us-central1/getCharacters?chaos=${chaos}&timeout=${timeout}`
   ).pipe(
     switchMap((response) => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        return of({ error: true, message: `Error ${response.status}` });
-      }
-    })
+      return response.json();
+    }),
+    retry(4),
+    map((data) => ({ loading: false, data })),
+    catchError(() => of({ loading: false, data: [], error: true })),
+    startWith({ loading: true, data: [] })
   );
 
 const fetchCharacters$ = action$.pipe(
@@ -30,13 +64,13 @@ const fetchCharacters$ = action$.pipe(
   )
 );
 
-const useObservable = (observable: any) => {
-  const [state, setState] = React.useState();
+const useObservable = <T,>(observable$: Observable<T>) => {
+  const [state, setState] = React.useState<T | undefined>();
 
   React.useEffect(() => {
-    const sub = observable.subscribe(setState);
+    const sub = observable$.subscribe(setState);
     return () => sub.unsubscribe();
-  }, [observable]);
+  }, [observable$]);
 
   return state;
 };
@@ -44,7 +78,7 @@ const useObservable = (observable: any) => {
 export const App = () => {
   const [chaos, setChaos] = React.useState(0);
   const [timeout, setTimeout] = React.useState(0);
-  const characters = useObservable(fetchCharacters$);
+  const data = useObservable(fetchCharacters$);
 
   const fetchData = async () => {
     action$.next({ payload: { chaos, timeout } });
@@ -76,13 +110,17 @@ export const App = () => {
       >
         Fetch data
       </button>
-      <List items={characters} />
+      <div className="pt-5 h-56 overflow-auto justify-center flex flex-col">
+        {data?.loading ? (
+          <div className="self-center">Loading...</div>
+        ) : data?.error ? (
+          <div className="self-center text-red-600">Error</div>
+        ) : (
+          <List items={data?.data} />
+        )}
+      </div>
     </div>
   );
-};
-
-type Character = {
-  name: string;
 };
 
 interface IList {
@@ -90,11 +128,10 @@ interface IList {
 }
 
 const List = ({ items = [] }: IList) => {
-  console.log(items);
   return (
     <ul>
       {items.map((item) => (
-        <li>{item.name}</li>
+        <li key={item.id}>{item.name}</li>
       ))}
     </ul>
   );
