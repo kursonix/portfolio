@@ -36,7 +36,9 @@ const Toggle = () => {
   return (
     <button
       className="p-2 bg-orange-600 text-white"
-      onClick={() => toggle(!open)}
+      onClick={() => {
+        toggle(!open);
+      }}
     >
       Toggle
     </button>

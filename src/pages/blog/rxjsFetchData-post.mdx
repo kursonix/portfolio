@@ -1,0 +1,13 @@
+---
+layout: "../../layouts/BlogPost.astro"
+title: "Creating reliable fetch handler with the rxjs"
+description: "Example of the fetch handler that can deal with slow and error-prone API"
+pubDate: "Mar 20 2023"
+---
+
+import { FetchData } from "../../components/blog/rxjsFetchData-post";
+
+Fetching data can be quite difficult when you are dealing with a slow and error-prone API. You need to implement use cases that can deal with all possible
+problems. Doing it with pure js can be quite hard, but with the help of rxjs we can write clean and elegant code.
+
+<FetchData client:visible></FetchData>
